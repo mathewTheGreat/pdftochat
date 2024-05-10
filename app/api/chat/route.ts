@@ -4,6 +4,7 @@ import { Message as VercelChatMessage, StreamingTextResponse } from 'ai';
 import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import { createRetrievalChain } from 'langchain/chains/retrieval';
 import { createHistoryAwareRetriever } from 'langchain/chains/history_aware_retriever';
+import { ChatGroq } from "@langchain/groq";
 
 import { HumanMessage, AIMessage, ChatMessage } from '@langchain/core/messages';
 import { ChatTogetherAI } from '@langchain/community/chat_models/togetherai';
@@ -20,6 +21,8 @@ import { loadEmbeddingsModel } from '../utils/embeddings';
 
 export const runtime =
   process.env.NEXT_PUBLIC_VECTORSTORE === 'mongodb' ? 'nodejs' : 'edge';
+
+const key = process.env.GROQ_API_KEY;
 
 const formatVercelMessages = (message: VercelChatMessage) => {
   if (message.role === 'user') {
@@ -86,6 +89,13 @@ export async function POST(req: NextRequest) {
       temperature: 0,
     });
 
+    const groqModel = new ChatGroq({
+      model: "llama3-70b-8192",
+      temperature: 0,
+      streaming: true,
+      
+    });
+
     const embeddings = loadEmbeddingsModel();
 
     const vectorStoreId = body.vectorStoreId;
@@ -132,14 +142,14 @@ export async function POST(req: NextRequest) {
     // Create a chain that can rephrase incoming questions for the retriever,
     // taking previous chat history into account. Returns relevant documents.
     const historyAwareRetrieverChain = await createHistoryAwareRetriever({
-      llm: model,
+      llm: groqModel,
       retriever,
       rephrasePrompt: historyAwarePrompt,
     });
 
     // Create a chain that answers questions using retrieved relevant documents as context.
     const documentChain = await createStuffDocumentsChain({
-      llm: model,
+      llm: groqModel,
       prompt: answerPrompt,
     });
 
