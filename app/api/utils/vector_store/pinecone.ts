@@ -14,8 +14,9 @@ export async function loadPineconeStore({
   });
 
   const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME ?? '';
-  const index = pinecone.index(PINECONE_INDEX_NAME);
-
+  const index = pinecone.index('pdfchat');
+  console.log("index", index);
+  console.log("namespace",namespace);
   const vectorstore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex: index,
     namespace,

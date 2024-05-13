@@ -18,7 +18,8 @@ import { HttpResponseOutputParser } from 'langchain/output_parsers';
 import { type MongoClient } from 'mongodb';
 import { loadVectorStore } from '../utils/vector_store';
 import { loadEmbeddingsModel } from '../utils/embeddings';
-
+import * as dotenv from "dotenv";
+dotenv.config();
 export const runtime =
   process.env.NEXT_PUBLIC_VECTORSTORE === 'mongodb' ? 'nodejs' : 'edge';
 
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
       model: "llama3-70b-8192",
       temperature: 0,
       streaming: true,
-      
+      apiKey: key,
     });
 
     const embeddings = loadEmbeddingsModel();

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     },
   });
 
-  if (docAmount > 3) {
+  if (docAmount > 10) {
     return NextResponse.json({
       error: 'You have reached the maximum number of documents',
     });
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       splitDoc.metadata.docstore_document_id = namespace;
     }
 
-    console.log('creating vector store...');
+    console.log('creating vector storeeee...');
 
     /* create and store the embeddings in the vectorStore */
     const embeddings = loadEmbeddingsModel();
